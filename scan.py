@@ -74,7 +74,10 @@ if __name__ == '__main__':
     scanner.withDelegate(bracelet_delegate)
     cycle_flag = True
     while cycle_flag:
-        scanner.scan(100.0, True)
+        try:
+            scanner.scan(100.0, True)
+        except Exception, err:
+            print '1', err
     # Blocking call that processes network traffic, dispatches callbacks and
     # handles reconnecting.
     # Other loop*() functions are available that give a threaded interface and a
