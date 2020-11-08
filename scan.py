@@ -4,6 +4,7 @@ import socket
 import time
 from datetime import datetime
 
+import bluepy
 import paho.mqtt.client as mqtt
 import simplejson as json
 from bluepy.btle import Scanner
@@ -76,7 +77,7 @@ if __name__ == '__main__':
     while cycle_flag:
         try:
             scanner.scan(100.0, True)
-        except Exception, err:
+        except bluepy.btle.BTLEException, err:
             print '1', err
     # Blocking call that processes network traffic, dispatches callbacks and
     # handles reconnecting.
