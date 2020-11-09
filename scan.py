@@ -23,31 +23,37 @@ class BraceletDelegate:
     def handleDiscovery(self, scanEntry, isNewDev, isNewData):
         d = {}
         d['rssi'] = scanEntry.rssi
+
         d['addr'] = scanEntry.addr
         d['addrType'] = scanEntry.addrType
         for (adtype, desc, value) in scanEntry.getScanData():
             d[desc.replace(' ', '')] = value
-        if 'CompleteLocalName' in d and d['CompleteLocalName'].startswith('HW702A'):
+        if d['addr'] == 'd2:45:40:5e:f7:9c':
+            # print d
+            # if 'CompleteLocalName' in d and d['CompleteLocalName'].startswith('HW702A'):
             t = time.time()
-            print '{} {} {} {}'.format(datetime.now(), d['CompleteLocalName'], d['rssi'], d['Manufacturer'])
-            heart_beat = int(d['Manufacturer'][-2:], 16)
+            # print '{} {} {} {}'.format(datetime.now(), d['CompleteLocalName'], d['rssi'], d['Manufacturer'])
+            # heart_beat = int(d['Manufacturer'][-2:], 16)
 
             if self.client:
-                client.publish('ble2mqtt' + '/' + d['CompleteLocalName'] + '/' + self.hostname,
-                               payload=json.dumps({'heart_beat': heart_beat,
-                                                   'timestamp': int(t),
-                                                   'rssi': d['rssi'],
-                                                   'hostname': self.hostname,
-                                                   'Manufacturer': d['Manufacturer'],
-                                                   'bracelet_name': d['CompleteLocalName']}),
+                # client.publish('ble2mqtt' + '/' + d['CompleteLocalName'] + '/' + self.hostname,
+                #                payload=json.dumps({'heart_beat': heart_beat,
+                #                                    'timestamp': int(t),
+                #                                    'rssi': d['rssi'],
+                #                                    'hostname': self.hostname,
+                #                                    'Manufacturer': d['Manufacturer'],
+                #                                    'bracelet_name': d['CompleteLocalName']}),
+                client.publish('ble2mqtt' + '/' + self.hostname,
+                               payload=json.dumps({
+                                   'timestamp': int(t),
+                                   'rssi': d['rssi'],
+                                   'hostname': self.hostname,
+                                   'Manufacturer': d['Manufacturer'],
+                                   'name': d['addr']}),
                                qos=0,
                                retain=False)
 
-                # self.socketio.emit('server_response',
-                #                    {'heart_beat': heart_beat,
-                #                     'bracelet_name': d['CompleteLocalName']},
-                #                    namespace='/test')
-                Bracelet_Map[d['CompleteLocalName']] = d['Manufacturer']
+            # Bracelet_Map[d['CompleteLocalName']] = d['Manufacturer']
 
 
 # The callback for when the client receives a CONNACK response from the server.
@@ -83,4 +89,4 @@ if __name__ == '__main__':
     # handles reconnecting.
     # Other loop*() functions are available that give a threaded interface and a
     # manual interface.
-    client.loop_forever()
+    # client.loop_forever()
